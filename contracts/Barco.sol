@@ -6,7 +6,7 @@ pragma solidity ^0.5.11; contract Barco {
     // Estructura de datos embarcación
     
     struct Embarcacion{
-        string IMO; //ID único de la embarcación
+        string IMO; //ID único de la embarcación ( IMO + 7 digitos) Ej: IMO 8814275
         string modelo; //modelo del barco
         string tipoEmbarcacion; //propósito de la embarcación
         uint eslora; 
@@ -25,6 +25,8 @@ pragma solidity ^0.5.11; contract Barco {
     struct Tripulante{
         string DNI;
         string nombre;
+        string apellidos;
+        string puesto;
         uint certificado;
     }
     
@@ -33,6 +35,7 @@ pragma solidity ^0.5.11; contract Barco {
    
    // Eventos
    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+   event shipCreated(address indexed owner, address indexed barcoDir);
     
     //Creación del Barco
     constructor (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion, uint _eslora, uint _manga, uint _puntal, 
@@ -42,6 +45,7 @@ pragma solidity ^0.5.11; contract Barco {
         owner = msg.sender;
         barco = Embarcacion(_IMO, _modelo, _tipoEmbarcacion, _eslora, _manga, _puntal, 
         _motor, _fechaBotadura, _numLicencia, _puerto, _capacidadCarga, _bandera );
+        emit shipCreated(owner, barcoDir);
     }
     
     modifier onlyOwner() {
@@ -59,12 +63,14 @@ pragma solidity ^0.5.11; contract Barco {
     }
 
 
-    function anyadirTripulante(string memory _DNI, string memory _nombre, uint _certificado) onlyOwner public {
+    function anyadirTripulante(string memory _DNI, string memory _nombre, string memory _apellidos, string memory _puesto,  uint _certificado) onlyOwner public {
         // La peticion debe ser enviada por el creador y el tripulante no estar en la lista
         require(!Tripulantes[_DNI]);
         Tripulante memory tripulante;
         tripulante.DNI = _DNI;
         tripulante.nombre = _nombre;
+        tripulante.apellidos = _apellidos;
+        tripulante.puesto = _puesto;
         tripulante.certificado = _certificado;
         Tripulacion.push(tripulante);
         Tripulantes[_DNI] = true;
