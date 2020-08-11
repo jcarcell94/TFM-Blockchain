@@ -1,4 +1,6 @@
-pragma solidity ^0.5.11; contract Barco {
+pragma solidity ^0.5.11; 
+
+contract Barco {
     
     address public barcoDir; // Direccion del contrato
     address public owner; //creador del smartcontract
@@ -13,7 +15,7 @@ pragma solidity ^0.5.11; contract Barco {
         uint manga;
         uint puntal;
         string motor; //tipo de motor
-        uint fechaBotadura; 
+        uint fechaBotadura; //fecha en formato UNIX timestamp
         uint numLicencia; //licencia de explotación del barco
         string puerto; //puerto en el que está registrado el barco
         uint capacidadCarga;
@@ -53,8 +55,6 @@ pragma solidity ^0.5.11; contract Barco {
         _;
     }
 
-
-    //HAY QUE METERLO EN UN STRUCT PARECE PORQUE EXCEDE EL LÍMITE DE VARIABLES: https://ethereum.stackexchange.com/questions/7325/stack-too-deep-try-removing-local-variables 
     //Información completa del Barco
     function getBarco() public view returns (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion,  
                                             uint _numLicencia, string memory _puerto, string memory _bandera) {
@@ -62,6 +62,13 @@ pragma solidity ^0.5.11; contract Barco {
         return (b.IMO, b.modelo, b.tipoEmbarcacion, b.numLicencia, b.puerto, b.bandera);
     }
 
+    function setPuerto(string memory _puerto) onlyOwner public{
+        barco.puerto = _puerto;
+    }
+    
+    function setBandera(string memory _bandera) onlyOwner public{
+        barco.bandera = _bandera;
+    }
 
     function anyadirTripulante(string memory _DNI, string memory _nombre, string memory _apellidos, string memory _puesto,  uint _certificado) onlyOwner public {
         // La peticion debe ser enviada por el creador y el tripulante no estar en la lista
@@ -81,13 +88,15 @@ pragma solidity ^0.5.11; contract Barco {
         require(Tripulantes[_DNI]);
         for (uint i=0;i<Tripulacion.length;i++){
             if(compareStrings(Tripulacion[i].DNI, _DNI)){
-                delete Tripulacion[i];
+                Tripulacion[i] = Tripulacion[Tripulacion.length-1];
+                delete Tripulacion[Tripulacion.length-1];
+                Tripulacion.length--;
                 Tripulantes[_DNI] = false;
                 break;
             }
         }
     }
-    
+
     function compareStrings (string memory a, string memory b) public pure returns (bool) {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))) );
        }
