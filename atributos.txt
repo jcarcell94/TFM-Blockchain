@@ -1,0 +1,41 @@
+* Barco
+ - IMO (un ID único) https://iss-foundation.org/knowledge-tools/databases/imo-database/#:~:text=ABOUT%20IMO,name%2C%20flag%2C%20or%20owner.
+ - Tipo de embarcación
+ - Modelo
+ - Eslora
+ - Manga
+ - Puntal
+ - Motor
+ - Fecha de botadura
+ - Número Licencia pesquera (se asigna la licencia al barco) https://www.mapa.gob.es/es/pesca/temas/control-e-inspeccion-pesquera/licencias-autorizaciones-permisos-pesca/
+ - Titular (persona física o empresa/organización)
+ - Tripulación []
+ - Nº certificado []
+ - Puerto
+ - Capacidad de carga
+ - Bandera
+
+* Viaje
+ - Empresa o persona física explotadora del viaje (por si se subcontrata)
+ - ID viaje (único)
+ - Dir contrato Barco
+ - Puerto de inicio
+ - Puerto final estipulado
+ - Puerto final real
+ - Propósito (Ej, pesca de Atunes)
+ - Localización (latitud/longitud)[] (la info la podemos sacar del sistema AIS un estandard https://es.wikipedia.org/wiki/Sistema_de_Identificaci%C3%B3n_Autom%C3%A1tica)
+ - Timestamp de la localización
+ - hora local de la embarcación
+ - Estado (pescando, en trayecto, regreso)
+ - Velocidad/rumbo
+ - Area: por ejemplo bahía de Bilbao
+ - Tiempo atmosférico (velocidad de viento/dirección/temperatura)
+ - Estado del viaje (no iniciado, en curso, finalizado, en revisión (peritando la carga), no válido (ha pescado en zonas no válidas o lo que sea), warning(es posible que haya pescado donde no debe))
+
+* Viajes
+ - Dir contrato Barcos []
+ - Dir contrato Viaje []
+ - Crear Barco []
+ - Crear Viaje []
+ - getters de la info de los contratos viaje y barco
+ - setters ""
