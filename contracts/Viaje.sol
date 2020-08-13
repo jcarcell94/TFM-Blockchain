@@ -40,7 +40,7 @@ contract Viaje {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event travelCreated(address indexed owner, address indexed viajeDir);
     
-    //Creación del Barco
+    //Creación del Viaje
     constructor (uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _puertoFinalReal, string memory _proposito) public{
         viajeDir = address(this);
         owner = msg.sender;
@@ -58,9 +58,52 @@ contract Viaje {
         viaje.area.push("None");
         viaje.weather.push("None");
         viaje.estadoViaje= EstadoViaje.noiniciado;
-        emit travelCreated(owner, barcoDir);
+        emit travelCreated(owner, viajeDir);
     }
     
+    // Cambio de estado VIAJE no iniciado -> en curso
+    function startTravel() onlyOwner public{
+        if (viaje.estadoViaje == EstadoViaje.noiniciado)
+            viaje.estadoViaje = EstadoViaje.encurso;
+            viaje.estadoBarco = EstadoBarco.saliendo;
+    }
+
+    // Cambio de estado VIAJE en curso -> revision
+    function reviewTravel() onlyOwner public{
+        if (viaje.estadoViaje == EstadoViaje.encurso)
+            viaje.estadoViaje = EstadoViaje.revision;
+            viaje.estadoBarco = EstadoBarco.amarrado;
+    }
+
+    // Cambio de estado VIAJE revision -> finalizado
+    function endTravel() onlyOwner public{
+        if (viaje.estadoViaje == EstadoViaje.revision)
+            viaje.estadoViaje = EstadoViaje.finalizado;
+    }
+
+    // Cambio de estado VIAJE revision || finalizado -> novalido
+    function novalidTravel() onlyOwner public{
+        if (viaje.estadoViaje == EstadoViaje.revision || viaje.estadoViaje == EstadoViaje.finalizado)
+            viaje.estadoViaje = EstadoViaje.novalido;
+    }
+
+    // Cambio de estado BARCO saliendo -> pescando
+    function fishBoat() onlyOwner public{
+        if (viaje.estadoBarco == EstadoBarco.saliendo)
+            viaje.estadoBarco = EstadoBarco.pescando;
+    }
+
+    // Cambio de estado BARCO pescando -> regresando
+    function backBoat() onlyOwner public{
+        if (viaje.estadoBarco == EstadoBarco.pescando)
+            viaje.estadoBarco = EstadoBarco.regresando;
+    }
+
+    // Función que vaya rellenando los datos que le vayan llegando del viaje *POR IMPLEMENTAR*
+    function updateData() OnlyOwner public{
+
+    }
+
     modifier onlyOwner() {
         require(msg.sender == owner, 'Only owner.');
         _;
