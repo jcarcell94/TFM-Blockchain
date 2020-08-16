@@ -39,16 +39,18 @@ contract Viaje {
    // Eventos
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event travelCreated(address indexed owner, address indexed viajeDir);
+    event dataUploaded(address indexed owner, address indexed viajeDir);
     
     //Creación del Viaje
-    constructor (uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _puertoFinalReal, string memory _proposito) public{
+    constructor (uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _proposito, address _barcoDir) public{
         viajeDir = address(this);
+        barcoDir = _barcoDir;
         owner = msg.sender;
         viaje.ID = _ID;
         viaje.empresa = _empresa;
         viaje.puertoIni = _puertoIni;
         viaje.puertoFinalEst = _puertoFinalEst;
-        viaje.puertoFinalReal = _puertoFinalReal;
+        viaje.puertoFinalReal = "None";
         viaje.proposito = _proposito;
         viaje.localizacion.push("None/None"); 
         viaje.timeLocalizacion.push(0);
@@ -60,48 +62,60 @@ contract Viaje {
         viaje.estadoViaje= EstadoViaje.noiniciado;
         emit travelCreated(owner, viajeDir);
     }
-    
+
+    function uploadData(string memory _localizacion, uint _timeLocalizacion, uint _horaLocal, string memory _velRumbo, string memory _area, string memory _weather) onlyOwner public{
+        require(viaje.estadoViaje == EstadoViaje.encurso, 'El viaje no se encuentra en curso');
+        viaje.localizacion.push(_localizacion);
+        viaje.timeLocalizacion.push(_timeLocalizacion);
+        viaje.horaLocal.push(_horaLocal);
+        viaje.velRumbo.push(_velRumbo);
+        viaje.area.push(_area);
+        viaje.weather.push(_weather);
+        emit dataUploaded(owner, viajeDir);
+    }
+
+    function getViaje() public view returns (uint _ID, string memory _puertoIni, string memory _proposito, EstadoViaje _estadoViaje, EstadoBarco estadoBarco){
+        return (viaje.ID, viaje.puertoIni, viaje.proposito, viaje.estadoViaje, viaje.estadoBarco);
+    }
+
+    //Faltaría añadir una funcion que devuelva la traza del barco y otra con la ultima localizacion
+
     // Cambio de estado VIAJE no iniciado -> en curso
     function startTravel() onlyOwner public{
-        if (viaje.estadoViaje == EstadoViaje.noiniciado)
-            viaje.estadoViaje = EstadoViaje.encurso;
-            viaje.estadoBarco = EstadoBarco.saliendo;
+        require (viaje.estadoViaje == EstadoViaje.noiniciado, 'El viaje debe de estar no iniciado');
+        viaje.estadoViaje = EstadoViaje.encurso;
+        viaje.estadoBarco = EstadoBarco.saliendo;
     }
 
     // Cambio de estado VIAJE en curso -> revision
     function reviewTravel() onlyOwner public{
-        if (viaje.estadoViaje == EstadoViaje.encurso)
-            viaje.estadoViaje = EstadoViaje.revision;
-            viaje.estadoBarco = EstadoBarco.amarrado;
+        require (viaje.estadoViaje == EstadoViaje.encurso, 'El viaje debe de estar en curso');
+        viaje.estadoViaje = EstadoViaje.revision;
+        viaje.estadoBarco = EstadoBarco.amarrado;
     }
 
     // Cambio de estado VIAJE revision -> finalizado
     function endTravel() onlyOwner public{
-        if (viaje.estadoViaje == EstadoViaje.revision)
-            viaje.estadoViaje = EstadoViaje.finalizado;
+        require (viaje.estadoViaje == EstadoViaje.revision, 'El viaje debe de estar en revisión');
+        viaje.estadoViaje = EstadoViaje.finalizado;
     }
 
     // Cambio de estado VIAJE revision || finalizado -> novalido
     function novalidTravel() onlyOwner public{
-        if (viaje.estadoViaje == EstadoViaje.revision || viaje.estadoViaje == EstadoViaje.finalizado)
-            viaje.estadoViaje = EstadoViaje.novalido;
+        require (viaje.estadoViaje == EstadoViaje.revision || viaje.estadoViaje == EstadoViaje.finalizado, 'El viaje debe de estar en revisión o finalizado');
+        viaje.estadoViaje = EstadoViaje.novalido;
     }
 
     // Cambio de estado BARCO saliendo -> pescando
     function fishBoat() onlyOwner public{
-        if (viaje.estadoBarco == EstadoBarco.saliendo)
-            viaje.estadoBarco = EstadoBarco.pescando;
+        require (viaje.estadoBarco == EstadoBarco.saliendo);
+        viaje.estadoBarco = EstadoBarco.pescando;
     }
 
     // Cambio de estado BARCO pescando -> regresando
     function backBoat() onlyOwner public{
-        if (viaje.estadoBarco == EstadoBarco.pescando)
-            viaje.estadoBarco = EstadoBarco.regresando;
-    }
-
-    // Función que vaya rellenando los datos que le vayan llegando del viaje *POR IMPLEMENTAR*
-    function updateData() OnlyOwner public{
-
+        require (viaje.estadoBarco == EstadoBarco.pescando);
+        viaje.estadoBarco = EstadoBarco.regresando;
     }
 
     modifier onlyOwner() {
