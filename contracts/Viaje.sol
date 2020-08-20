@@ -18,13 +18,13 @@ contract Viaje {
         string puertoFinalEst; //puerto final establecido
         string puertoFinalReal; //puerto final real
         string proposito; //propósito del viaje
-        string [] localizacion; //localización de la embarcacion (latitud/longitud)
+        bytes32 [] localizacion; //localización de la embarcacion (latitud/longitud)
         uint [] timeLocalizacion; //timestamp del registro de la localización
         uint [] horaLocal;  //hora local de la embarcación
         EstadoBarco estadoBarco;
-        string [] velRumbo; //velocidad/rumbo
-        string [] area; //área geográfica en la que se encuentra
-        string [] weather; //estado atmosférico
+        bytes32 [] velRumbo; //velocidad/rumbo
+        bytes32 [] area; //área geográfica en la que se encuentra
+        bytes32 [] weather; //estado atmosférico
         
         //noiniciado: smart contract levantado pero el barco no ha salido
         //encurso: el barco se encuentra en proceso de viaje y pesca
@@ -52,18 +52,19 @@ contract Viaje {
         viaje.puertoFinalEst = _puertoFinalEst;
         viaje.puertoFinalReal = "None";
         viaje.proposito = _proposito;
-        viaje.localizacion.push("None/None"); 
+        viaje.localizacion.push(0x0); 
         viaje.timeLocalizacion.push(0);
         viaje.horaLocal.push(0);
         viaje.estadoBarco = EstadoBarco.amarrado;
-        viaje.velRumbo.push("None/None");
-        viaje.area.push("None");
-        viaje.weather.push("None");
+        viaje.velRumbo.push(0x0);
+        viaje.area.push(0x0);
+        viaje.weather.push(0x0);
         viaje.estadoViaje= EstadoViaje.noiniciado;
         emit travelCreated(owner, viajeDir);
     }
 
-    function uploadData(string memory _localizacion, uint _timeLocalizacion, uint _horaLocal, string memory _velRumbo, string memory _area, string memory _weather) onlyOwner public{
+    // Refresco de los datos del viaje
+    function uploadData(bytes32  _localizacion, uint _timeLocalizacion, uint _horaLocal, bytes32  _velRumbo, bytes32  _area, bytes32  _weather) onlyOwner public{
         require(viaje.estadoViaje == EstadoViaje.encurso, 'El viaje no se encuentra en curso');
         viaje.localizacion.push(_localizacion);
         viaje.timeLocalizacion.push(_timeLocalizacion);
@@ -74,11 +75,16 @@ contract Viaje {
         emit dataUploaded(owner, viajeDir);
     }
 
+    // Getter de datos principales del viaje
     function getViaje() public view returns (uint _ID, string memory _puertoIni, string memory _proposito, EstadoViaje _estadoViaje, EstadoBarco estadoBarco){
         return (viaje.ID, viaje.puertoIni, viaje.proposito, viaje.estadoViaje, viaje.estadoBarco);
     }
 
-    //Faltaría añadir una funcion que devuelva la traza del barco y otra con la ultima localizacion
+    // Devuelve los datos de la ruta (localización, velocidad rumbo...)
+    function getRoute() public view returns (uint [] memory _timeLocalizacion, uint [] memory _horaLocal, bytes32[] memory _localizacion, bytes32[] memory _velRumbo, bytes32[] memory _area, bytes32[] memory _weather){
+        require(viaje.estadoViaje != EstadoViaje.noiniciado);
+        return (viaje.timeLocalizacion, viaje.horaLocal, viaje.localizacion, viaje.velRumbo, viaje.area, viaje.weather);
+    }
 
     // Cambio de estado VIAJE no iniciado -> en curso
     function startTravel() onlyOwner public{
@@ -137,4 +143,17 @@ contract Viaje {
         require(owner != address(0), "Ownable: new owner is the zero address"); emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
+    
+    // Función para convertir string -> bytes32
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
 }
+
