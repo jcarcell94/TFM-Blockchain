@@ -86,6 +86,16 @@ contract Viaje {
         return (viaje.timeLocalizacion, viaje.horaLocal, viaje.localizacion, viaje.velRumbo, viaje.area, viaje.weather);
     }
 
+    //Devuelve la última localizacion
+    function getLocalization() public view returns(bytes32[] memory _localizacion){
+        require(viaje.estadoViaje != EstadoViaje.noiniciado);
+        return viaje.localizacion[viaje.localizacion.length];
+    }
+
+    function getStatus() public view returns(EstadoBarco _estadoBarco){
+        return viaje.estadoBarco;
+    }
+
     // Cambio de estado VIAJE no iniciado -> en curso
     function startTravel() onlyOwner public{
         require (viaje.estadoViaje == EstadoViaje.noiniciado, 'El viaje debe de estar no iniciado');
@@ -144,7 +154,7 @@ contract Viaje {
         owner = newOwner;
     }
     
-    // Función para convertir string -> bytes32
+    // Función para convertir string -> bytes32 ¿?Necesario
     function stringToBytes32(string memory source) public pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
