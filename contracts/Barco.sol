@@ -13,13 +13,11 @@ contract Barco {
         string tipoEmbarcacion; //propósito de la embarcación
         uint eslora; 
         uint manga;
-        uint puntal;
         string motor; //tipo de motor
         uint fechaBotadura; //fecha en formato UNIX timestamp
         uint numLicencia; //licencia de explotación del barco
         string puerto; //puerto en el que está registrado el barco
         uint capacidadCarga;
-        string bandera; //país en el que está registrado
     }
     
     // Estructura de datos para el tripulante de la embarcación
@@ -40,13 +38,14 @@ contract Barco {
    event shipCreated(address indexed owner, address indexed barcoDir);
     
     //Creación del Barco
-    constructor (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion, uint _eslora, uint _manga, uint _puntal, 
-    string memory _motor, uint _fechaBotadura, uint _numLicencia, string memory _puerto, uint _capacidadCarga, string memory _bandera) public{
+   //Creación del Barco
+    constructor (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion, uint _eslora, uint _manga, 
+    string memory _motor, uint _fechaBotadura, uint _numLicencia, string memory _puerto, uint _capacidadCarga) public{
 
         barcoDir = address(this);
         owner = msg.sender;
-        barco = Embarcacion(_IMO, _modelo, _tipoEmbarcacion, _eslora, _manga, _puntal, 
-        _motor, _fechaBotadura, _numLicencia, _puerto, _capacidadCarga, _bandera );
+        barco = Embarcacion(_IMO, _modelo, _tipoEmbarcacion, _eslora, _manga,
+        _motor, _fechaBotadura, _numLicencia, _puerto, _capacidadCarga);
         emit shipCreated(owner, barcoDir);
     }
     
@@ -57,18 +56,15 @@ contract Barco {
 
     //Información completa del Barco
     function getBarco() public view returns (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion,  
-                                            uint _numLicencia, string memory _puerto, string memory _bandera) {
+                                            uint _numLicencia, string memory _puerto) {
         Embarcacion memory b = barco;
-        return (b.IMO, b.modelo, b.tipoEmbarcacion, b.numLicencia, b.puerto, b.bandera);
+        return (b.IMO, b.modelo, b.tipoEmbarcacion, b.numLicencia, b.puerto);
     }
 
     function setPuerto(string memory _puerto) onlyOwner public{
         barco.puerto = _puerto;
     }
     
-    function setBandera(string memory _bandera) onlyOwner public{
-        barco.bandera = _bandera;
-    }
 
     function anyadirTripulante(string memory _DNI, string memory _nombre, string memory _apellidos, string memory _puesto,  uint _certificado) onlyOwner public {
         // La peticion debe ser enviada por el creador y el tripulante no estar en la lista

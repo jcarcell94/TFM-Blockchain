@@ -10,7 +10,7 @@ contract FactoriaStorage{
     }
     
     function addViaje(address _viaje) public {
-        lotteries.push(_viaje);
+        viajes.push(_viaje);
     }
     
     function getViajes() public view returns(address[] memory){
@@ -18,10 +18,10 @@ contract FactoriaStorage{
     }
     
     function addBarco(address _barco) public {
-        lotteries.push(_barco);
+        barcos.push(_barco);
     }
     
-    function getViajes() public view returns(address[] memory){
+    function getBarcos() public view returns(address[] memory){
         return barcos;
     }
 

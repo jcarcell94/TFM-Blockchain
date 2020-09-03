@@ -76,8 +76,8 @@ contract Viaje {
     }
 
     // Getter de datos principales del viaje
-    function getViaje() public view returns (uint _ID, string memory _puertoIni, string memory _proposito, EstadoViaje _estadoViaje, EstadoBarco estadoBarco){
-        return (viaje.ID, viaje.puertoIni, viaje.proposito, viaje.estadoViaje, viaje.estadoBarco);
+    function getViaje() public view returns (uint _ID, string memory _puertoIni, string memory _proposito, string memory _estadoViaje, string memory estadoBarco){
+        return (viaje.ID, viaje.puertoIni, viaje.proposito, getStatusViaje(), getStatusBarco());
     }
 
     // Devuelve los datos de la ruta (localización, velocidad rumbo...)
@@ -87,13 +87,9 @@ contract Viaje {
     }
 
     //Devuelve la última localizacion
-    function getLocalization() public view returns(bytes32[] memory _localizacion){
+    function getLocalization() public view returns(bytes32  _localizacion){
         require(viaje.estadoViaje != EstadoViaje.noiniciado);
         return viaje.localizacion[viaje.localizacion.length];
-    }
-
-    function getStatus() public view returns(EstadoBarco _estadoBarco){
-        return viaje.estadoBarco;
     }
 
     // Cambio de estado VIAJE no iniciado -> en curso
@@ -103,6 +99,21 @@ contract Viaje {
         viaje.estadoBarco = EstadoBarco.saliendo;
     }
 
+    function getStatusViaje () public view returns (string memory _estadoViaje) {
+        if (viaje.estadoViaje == EstadoViaje.encurso) return "En curso";
+        if (viaje.estadoViaje == EstadoViaje.noiniciado) return "No iniciado";
+        if (viaje.estadoViaje == EstadoViaje.finalizado) return "Finalizado";
+        if (viaje.estadoViaje == EstadoViaje.revision) return "Revisión";
+        if (viaje.estadoViaje == EstadoViaje.novalido) return "No valido";
+    }
+
+    function getStatusBarco () public view returns (string memory _estadoBarco) {
+        if (viaje.estadoBarco == EstadoBarco.amarrado) return "Amarrado";
+        if (viaje.estadoBarco == EstadoBarco.amarrado) return "Saliendo";
+        if (viaje.estadoBarco == EstadoBarco.amarrado) return "Pescando";
+        if (viaje.estadoBarco == EstadoBarco.amarrado) return "Regresando";
+    }
+    
     // Cambio de estado VIAJE en curso -> revision
     function reviewTravel() onlyOwner public{
         require (viaje.estadoViaje == EstadoViaje.encurso, 'El viaje debe de estar en curso');
