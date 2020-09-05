@@ -1,10 +1,11 @@
 pragma solidity ^0.5.11; 
 
-contract Viaje {
+import './Libraries/Ownable.sol';
+
+contract Viaje is Ownable{
     
     address public barcoDir; // Direccion del contrato del barco
     address public viajeDir; // Direccion del contrato del viaje
-    address public owner; //creador del smartcontract
     Faena viaje; 
 
     // Estructura de datos del viaje
@@ -34,10 +35,7 @@ contract Viaje {
         EstadoViaje estadoViaje;
     }
 
-
-   
    // Eventos
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event travelCreated(address indexed owner, address indexed viajeDir);
     event dataUploaded(address indexed owner, address indexed viajeDir);
     
@@ -145,25 +143,9 @@ contract Viaje {
         viaje.estadoBarco = EstadoBarco.regresando;
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, 'Only owner.');
-        _;
-    }
-
     function compareStrings (string memory a, string memory b) public pure returns (bool) {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))) );
        }
-    
-    function renounceOwnership() public onlyOwner { 
-        emit OwnershipTransferred(owner, address(0)); owner = address(0);
-    }
-    function transferOwnership(address newOwner) public onlyOwner {
-        _transferOwnership(newOwner); 
-    }
-    function _transferOwnership(address newOwner) internal {
-        require(owner != address(0), "Ownable: new owner is the zero address"); emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
     
     // Función para convertir string -> bytes32 ¿?Necesario
     function stringToBytes32(string memory source) public pure returns (bytes32 result) {
@@ -177,4 +159,3 @@ contract Viaje {
         }
     }
 }
-
