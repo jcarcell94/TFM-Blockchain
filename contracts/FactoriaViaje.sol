@@ -7,13 +7,18 @@ import './FactoriaStorage.sol';
 contract FactoriaViaje {
    
    FactoriaStorage public factoriaStorage;
+   bool paused;
    
    constructor() public{
       factoriaStorage = new FactoriaStorage();
    }
+   
+   modifier notPaused() {
+       require(!paused,'Contract is paused');
+   }
 
     // Crear un nuevo viaje y añadir la dirección
-    function createTravel( uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _proposito, address _barcoDir) public{
+    function createTravel( uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _proposito, address _barcoDir) notPaused onlyOwner public{
         Viaje newViaje = new Viaje(_ID, _empresa, _puertoIni, _puertoFinalEst, _proposito, _barcoDir);
         factoriaStorage.addViaje(address(newViaje));
     }
@@ -45,10 +50,18 @@ contract FactoriaViaje {
         Viaje viaje = Viaje(viajeAddress);
         return viaje.getLocalization();
     }
+    
+    function changeFactoryVersion(address newFactory) notPaused onlyOwner public view {
+        FactoriaStorage fs = FactoriaStorage(factoriaStorage);
+        fs.changeFactoryVersion(newFactory);
+    }
+    
+    function emergencyStop() onlyOwner {
+        paused = true;
+    }
+    
+    function resume() onlyOwner {
+        paused = false;
+    }
 
 }
-    
-
-
-
-
