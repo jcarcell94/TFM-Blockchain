@@ -1,9 +1,13 @@
 pragma solidity ^0.5.11; 
 
-contract Barco {
+import './Libraries/Ownable.sol';
+import './Libraries/SafeMath.sol'; 
+
+contract Barco is Ownable{
+    
+    using SafeMath for uint;
     
     address public barcoDir; // Direccion del contrato
-    address public owner; //creador del smartcontract
     Embarcacion barco; 
     // Estructura de datos embarcación
     
@@ -34,10 +38,8 @@ contract Barco {
    mapping (string => bool) Tripulantes; // Mapping de DNI -> Activo
    
    // Eventos
-   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
    event shipCreated(address indexed owner, address indexed barcoDir);
     
-    //Creación del Barco
    //Creación del Barco
     constructor (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion, uint _eslora, uint _manga, 
     string memory _motor, uint _fechaBotadura, uint _numLicencia, string memory _puerto, uint _capacidadCarga) public{
@@ -96,15 +98,5 @@ contract Barco {
     function compareStrings (string memory a, string memory b) public pure returns (bool) {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))) );
        }
-    
-    function renounceOwnership() public onlyOwner { 
-        emit OwnershipTransferred(owner, address(0)); owner = address(0);
-    }
-    function transferOwnership(address newOwner) public onlyOwner {
-        _transferOwnership(newOwner); 
-    }
-    function _transferOwnership(address newOwner) internal {
-        require(owner != address(0), "Ownable: new owner is the zero address"); emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
+
 }
