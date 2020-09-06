@@ -15,10 +15,11 @@ contract FactoriaViaje {
    
    modifier notPaused() {
        require(!paused,'Contract is paused');
+       _;
    }
 
     // Crear un nuevo viaje y añadir la dirección
-    function createTravel( uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _proposito, address _barcoDir) notPaused onlyOwner public{
+    function createTravel( uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _proposito, address _barcoDir) notPaused public{
         Viaje newViaje = new Viaje(_ID, _empresa, _puertoIni, _puertoFinalEst, _proposito, _barcoDir);
         factoriaStorage.addViaje(address(newViaje));
     }
@@ -51,16 +52,16 @@ contract FactoriaViaje {
         return viaje.getLocalization();
     }
     
-    function changeFactoryVersion(address newFactory) notPaused onlyOwner public view {
+    function changeFactoryVersion(address newFactory) notPaused public {
         FactoriaStorage fs = FactoriaStorage(factoriaStorage);
         fs.changeFactoryVersion(newFactory);
     }
     
-    function emergencyStop() onlyOwner {
+    function emergencyStop() public {
         paused = true;
     }
     
-    function resume() onlyOwner {
+    function resume() public {
         paused = false;
     }
 

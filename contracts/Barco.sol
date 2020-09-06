@@ -45,16 +45,11 @@ contract Barco is Ownable{
     string memory _motor, uint _fechaBotadura, uint _numLicencia, string memory _puerto, uint _capacidadCarga) public{
 
         barcoDir = address(this);
-        owner = msg.sender;
         barco = Embarcacion(_IMO, _modelo, _tipoEmbarcacion, _eslora, _manga,
         _motor, _fechaBotadura, _numLicencia, _puerto, _capacidadCarga);
-        emit shipCreated(owner, barcoDir);
+        emit shipCreated(owner(), barcoDir);
     }
     
-    modifier onlyOwner() {
-        require(msg.sender == owner, 'Only owner.');
-        _;
-    }
 
     //Información completa del Barco
     function getBarco() public view returns (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion,  

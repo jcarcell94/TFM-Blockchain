@@ -43,7 +43,6 @@ contract Viaje is Ownable{
     constructor (uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _proposito, address _barcoDir) public{
         viajeDir = address(this);
         barcoDir = _barcoDir;
-        owner = msg.sender;
         viaje.ID = _ID;
         viaje.empresa = _empresa;
         viaje.puertoIni = _puertoIni;
@@ -58,7 +57,7 @@ contract Viaje is Ownable{
         viaje.area.push(0x0);
         viaje.weather.push(0x0);
         viaje.estadoViaje= EstadoViaje.noiniciado;
-        emit travelCreated(owner, viajeDir);
+        emit travelCreated(owner(), viajeDir);
     }
 
     // Refresco de los datos del viaje
@@ -70,7 +69,7 @@ contract Viaje is Ownable{
         viaje.velRumbo.push(_velRumbo);
         viaje.area.push(_area);
         viaje.weather.push(_weather);
-        emit dataUploaded(owner, viajeDir);
+        emit dataUploaded(owner(), viajeDir);
     }
 
     // Getter de datos principales del viaje
