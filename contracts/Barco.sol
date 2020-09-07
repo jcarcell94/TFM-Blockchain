@@ -1,7 +1,7 @@
 pragma solidity ^0.5.11; 
 
-import './Libraries/Ownable.sol';
-import './Libraries/SafeMath.sol'; 
+import '../Libraries/Ownable.sol';
+import '../Libraries/SafeMath.sol'; 
 
 contract Barco is Ownable{
     
@@ -13,7 +13,6 @@ contract Barco is Ownable{
     
     struct Embarcacion{
         string IMO; //ID único de la embarcación ( IMO + 7 digitos) Ej: IMO 8814275
-        string modelo; //modelo del barco
         string tipoEmbarcacion; //propósito de la embarcación
         uint eslora; 
         uint manga;
@@ -41,26 +40,20 @@ contract Barco is Ownable{
    event shipCreated(address indexed owner, address indexed barcoDir);
     
    //Creación del Barco
-    constructor (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion, uint _eslora, uint _manga, 
+    constructor (string memory _IMO, string memory _tipoEmbarcacion, uint _eslora, uint _manga, 
     string memory _motor, uint _fechaBotadura, uint _numLicencia, string memory _puerto, uint _capacidadCarga) public{
-
         barcoDir = address(this);
-        owner = msg.sender;
-        barco = Embarcacion(_IMO, _modelo, _tipoEmbarcacion, _eslora, _manga,
+        barco = Embarcacion(_IMO, _tipoEmbarcacion, _eslora, _manga,
         _motor, _fechaBotadura, _numLicencia, _puerto, _capacidadCarga);
-        emit shipCreated(owner, barcoDir);
+        emit shipCreated(msg.sender, barcoDir);
     }
     
-    modifier onlyOwner() {
-        require(msg.sender == owner, 'Only owner.');
-        _;
-    }
 
     //Información completa del Barco
-    function getBarco() public view returns (string memory _IMO, string memory _modelo, string memory _tipoEmbarcacion,  
+    function getBarco() public view returns (string memory _IMO, string memory _tipoEmbarcacion,  
                                             uint _numLicencia, string memory _puerto) {
         Embarcacion memory b = barco;
-        return (b.IMO, b.modelo, b.tipoEmbarcacion, b.numLicencia, b.puerto);
+        return (b.IMO, b.tipoEmbarcacion, b.numLicencia, b.puerto);
     }
 
     function setPuerto(string memory _puerto) onlyOwner public{
