@@ -1,6 +1,6 @@
 pragma solidity ^0.5.11; 
 
-import './Libraries/Ownable.sol';
+import '../Libraries/Ownable.sol';
 
 contract Viaje is Ownable{
     
@@ -43,22 +43,21 @@ contract Viaje is Ownable{
     constructor (uint _ID, string memory _empresa, string memory _puertoIni, string memory _puertoFinalEst, string memory _proposito, address _barcoDir) public{
         viajeDir = address(this);
         barcoDir = _barcoDir;
-        owner = msg.sender;
         viaje.ID = _ID;
         viaje.empresa = _empresa;
         viaje.puertoIni = _puertoIni;
         viaje.puertoFinalEst = _puertoFinalEst;
         viaje.puertoFinalReal = "None";
         viaje.proposito = _proposito;
-        viaje.localizacion.push(0x0); 
-        viaje.timeLocalizacion.push(0);
-        viaje.horaLocal.push(0);
+        /// viaje.localizacion.push(0x0); 
+        /// viaje.timeLocalizacion.push(0);
+        /// viaje.horaLocal.push(0);
         viaje.estadoBarco = EstadoBarco.amarrado;
-        viaje.velRumbo.push(0x0);
-        viaje.area.push(0x0);
-        viaje.weather.push(0x0);
+        /// viaje.velRumbo.push(0x0);
+        /// viaje.area.push(0x0);
+        /// viaje.weather.push(0x0);
         viaje.estadoViaje= EstadoViaje.noiniciado;
-        emit travelCreated(owner, viajeDir);
+        emit travelCreated(msg.sender, viajeDir);
     }
 
     // Refresco de los datos del viaje
@@ -70,7 +69,7 @@ contract Viaje is Ownable{
         viaje.velRumbo.push(_velRumbo);
         viaje.area.push(_area);
         viaje.weather.push(_weather);
-        emit dataUploaded(owner, viajeDir);
+        emit dataUploaded(msg.sender, viajeDir);
     }
 
     // Getter de datos principales del viaje
@@ -96,7 +95,7 @@ contract Viaje is Ownable{
         viaje.estadoViaje = EstadoViaje.encurso;
         viaje.estadoBarco = EstadoBarco.saliendo;
     }
-
+    
     function getStatusViaje () public view returns (string memory _estadoViaje) {
         if (viaje.estadoViaje == EstadoViaje.encurso) return "En curso";
         if (viaje.estadoViaje == EstadoViaje.noiniciado) return "No iniciado";
